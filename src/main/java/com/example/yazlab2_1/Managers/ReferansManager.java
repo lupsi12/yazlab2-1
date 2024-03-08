@@ -33,8 +33,12 @@ public class ReferansManager implements ReferansService {
     }
 
     @Override
-    public List<ReferansResponse> getAllReferans() {
-        List<Referans> referansList = referansRepo.findAll();
+    public List<ReferansResponse> getAllReferans(Optional<Long> veriId) {
+        List<Referans> referansList;
+        if(veriId.isPresent())
+            referansList = referansRepo.findByVeriId(veriId);
+        else
+            referansList = referansRepo.findAll();
         return referansList.stream().map(p -> new ReferansResponse(p)).collect(Collectors.toList());
     }
 

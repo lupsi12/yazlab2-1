@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/referans")
@@ -38,8 +39,8 @@ public class ReferansController {
     @Autowired
     ReferansService referansService;
     @GetMapping
-    public List<ReferansResponse> getAllReferans(){
-        return referansService.getAllReferans();
+    public List<ReferansResponse> getAllReferans(Optional<Long> veriId){
+        return referansService.getAllReferans(veriId);
     }
     @GetMapping("/{referansId}")
     public ReferansResponse getOneReferans(@PathVariable Long referansId){
