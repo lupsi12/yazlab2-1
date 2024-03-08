@@ -1,29 +1,18 @@
-package com.example.yazlab2_1.Entities;
+package com.example.yazlab2_1.Responses;
 
-import com.example.yazlab2_1.Responses.VeriResponse;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import com.example.yazlab2_1.Entities.Veri;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
-import java.util.List;
-
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "veri")
-public class Veri {
-    @Transient
-    public static final String SEQUENCE_NAME = "veri_sequence";
-
-    @Id
-    //@GeneratedValue(strategy =  GenerationType.IDENTITY)
+@NoArgsConstructor
+public class VeriResponse {
     private Long id;
     private String yayinAd;
     private String yazarIsim;
@@ -39,7 +28,7 @@ public class Veri {
     private int doiNumarasi;
     private String urlAdresi;
 
-    public Veri(VeriResponse veriEntity) {
+    public VeriResponse(Veri veriEntity) {
         this.id = veriEntity.getId();
         this.yayinAd = veriEntity.getYayinAd();
         this.yazarIsim = veriEntity.getYazarIsim();
@@ -53,12 +42,4 @@ public class Veri {
         this.doiNumarasi = veriEntity.getDoiNumarasi();
         this.urlAdresi = veriEntity.getUrlAdresi();
     }
-    /*
-    @ManyToOne
-    @JoinColumn(name = "referans_id" , referencedColumnName = "id")
-    @JsonBackReference
-    private Referans referans;
-
-    @DBRef
-    private List<Referans> referans;*/
 }
