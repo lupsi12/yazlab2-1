@@ -26,8 +26,9 @@ public class VeriUpdateRequest {
     private String makaleAnahtarKelime;
     private String ozet;
     private int alintiSayisi;
-    private int doiNumarasi;
+    private String doiNumarasi;
     private String urlAdresi;
+    private String urlLink;
     /*
     @ManyToOne
     @JoinColumn(name = "referans_id" , referencedColumnName = "id")

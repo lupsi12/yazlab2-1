@@ -36,8 +36,9 @@ public class Veri {
     private String makaleAnahtarKelime;
     private String ozet;
     private int alintiSayisi;
-    private int doiNumarasi;
+    private String doiNumarasi;
     private String urlAdresi;
+    private String urlLink;
 
     public Veri(VeriResponse veriEntity) {
         this.id = veriEntity.getId();
@@ -52,6 +53,7 @@ public class Veri {
         this.alintiSayisi = veriEntity.getAlintiSayisi();
         this.doiNumarasi = veriEntity.getDoiNumarasi();
         this.urlAdresi = veriEntity.getUrlAdresi();
+        this.urlLink = veriEntity.getUrlLink();
     }
     /*
     @ManyToOne

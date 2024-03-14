@@ -54,6 +54,7 @@ public class VeriManager implements VeriService {
         veri.setYazarIsim(veriCreateRequest.getYazarIsim());
         veri.setYayinciAdi(veriCreateRequest.getYayinciAdi());
         veri.setYayinTur(veriCreateRequest.getYayinTur());
+        veri.setUrlLink(veriCreateRequest.getUrlLink());
         return veriRepo.save(veri);
     }
 
@@ -83,6 +84,7 @@ public class VeriManager implements VeriService {
             foundVeri.setYazarIsim(veriUpdateRequest.getYazarIsim());
             foundVeri.setYayinciAdi(veriUpdateRequest.getYayinciAdi());
             foundVeri.setYayinTur(veriUpdateRequest.getYayinTur());
+            foundVeri.setUrlLink(veriUpdateRequest.getUrlLink());
             veriRepo.save(foundVeri);
             return foundVeri;
         }else
