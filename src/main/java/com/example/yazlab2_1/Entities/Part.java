@@ -18,6 +18,7 @@ public class Part {
     private Long id;
 
     private String kelime;
+    private String duzelenKelime = kelime+" -- yazımı düzeltilmiş sonuçları görüyorsunuz";
     private boolean durum;
 
     public Part(Part p) {

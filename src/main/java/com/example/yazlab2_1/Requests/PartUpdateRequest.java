@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PartUpdateRequest {
     private String kelime;
+    private String duzelenKelime = kelime+" -- yazımı düzeltilmiş sonuçları görüyorsunuz";
     private boolean durum;
 }

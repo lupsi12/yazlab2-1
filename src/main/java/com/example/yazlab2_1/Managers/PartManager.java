@@ -41,6 +41,7 @@ public class PartManager implements PartService {
         newPart.setId(sequenceGeneratorService.getSquenceNumber(part.SEQUENCE_NAME));
         newPart.setKelime(part.getKelime());
         newPart.setDurum(part.isDurum());
+        newPart.setDuzelenKelime(part.getDuzelenKelime());
         return partRepo.save(newPart);
     }
 
@@ -61,6 +62,7 @@ public class PartManager implements PartService {
             Part foundPart = part.get();
             foundPart.setDurum(partUpdateRequest.isDurum());
             foundPart.setKelime(partUpdateRequest.getKelime());
+            foundPart.setDuzelenKelime(partUpdateRequest.getDuzelenKelime());
             partRepo.save(foundPart);
             return foundPart;
         }else
