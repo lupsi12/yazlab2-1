@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/veri")
 @AllArgsConstructor
@@ -33,26 +34,44 @@ public class VeriController {
      */
     @Autowired
     private VeriService veriService;
+
+
+    @RequestMapping(method = RequestMethod.GET)
     @GetMapping
     public List<VeriResponse> getAllVeri(){
         return veriService.getAllVeri();
     }
+
+
+    @RequestMapping(method = RequestMethod.GET, path = "/{veriId}")
     @GetMapping("/{veriId}")
     public VeriResponse getOneVeri(@PathVariable Long veriId){
         return veriService.getVeriById(veriId);
     }
+
+
+    @RequestMapping(method = RequestMethod.POST)
     @PostMapping
     public Veri addVeri(@RequestBody VeriCreateRequest veriCreateRequest){
         return veriService.addVeri(veriCreateRequest);
     }
+
+
+    @RequestMapping(method = RequestMethod.PUT, path = "/{veriId}")
     @PutMapping("/{veriId}")
     public  Veri updateVeri(@PathVariable Long veriId, @RequestBody VeriUpdateRequest veriUpdateRequest){
         return veriService.updateVeri(veriId,veriUpdateRequest);
     }
+
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/{veriId}")
     @DeleteMapping("/{veriId}")
     public void deleteOneVeri(@PathVariable Long veriId){
         veriService.deleteVeri(veriId);
     }
+
+
+    @RequestMapping(method = RequestMethod.DELETE)
     @DeleteMapping
     public void deleteAllVeri(){
         veriService.deleteAllVeri();

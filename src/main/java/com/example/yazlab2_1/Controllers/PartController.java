@@ -22,29 +22,42 @@ import java.util.Optional;
 public class PartController {
     @Autowired
     PartService partService;
+
+
     @GetMapping
     public List<Part> getAllPart(){
         return partService.getAllPart();
     }
+
+
     @GetMapping("/{partId}")
     public Part getOnePart(@PathVariable Long partId){
         return partService.getPartById(partId);
     }
+
+
     @PostMapping
     public Part addPart(@RequestBody Part part){
         return partService.addPart(part);
     }
+
+
     @PutMapping("/{partId}")
     public  Part updatePart(@PathVariable Long partId, @RequestBody PartUpdateRequest partUpdateRequest){
         return partService.updatePart(partId,partUpdateRequest);
     }
+
+
     @DeleteMapping("/{partId}")
     public void deleteOnePart(@PathVariable Long partId){
         partService.deletePart(partId);
     }
+
+
     @DeleteMapping
     public void deleteAllReferans(){
         partService.deleteAllPart();
     }
+
 
 }

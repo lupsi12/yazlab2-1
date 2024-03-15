@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/referans")
 @AllArgsConstructor
@@ -38,26 +39,43 @@ public class ReferansController {
      */
     @Autowired
     ReferansService referansService;
+
+    @RequestMapping(method = RequestMethod.GET)
     @GetMapping
     public List<ReferansResponse> getAllReferans(Optional<Long> veriId){
         return referansService.getAllReferans(veriId);
     }
+
+
+    @RequestMapping(method = RequestMethod.GET, path = "/{referansId}")
     @GetMapping("/{referansId}")
     public ReferansResponse getOneReferans(@PathVariable Long referansId){
         return referansService.getReferansById(referansId);
     }
+
+
+    @RequestMapping(method = RequestMethod.POST)
     @PostMapping
     public Referans addReferans(@RequestBody ReferansCreateRequest referansCreateRequest){
         return referansService.addReferans(referansCreateRequest);
     }
+
+
+    @RequestMapping(method = RequestMethod.PUT, path = "/{referansId}")
     @PutMapping("/{referansId}")
     public  Referans updateReferans(@PathVariable Long referansId, @RequestBody ReferansUpdateRequest referansUpdateRequest){
         return referansService.updateReferans(referansId,referansUpdateRequest);
     }
+
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/{referansId}")
     @DeleteMapping("/{referansId}")
     public void deleteOneReferans(@PathVariable Long referansId){
         referansService.deleteReferans(referansId);
     }
+
+
+    @RequestMapping(method = RequestMethod.DELETE)
     @DeleteMapping
     public void deleteAllReferans(){
         referansService.deleteAllReferans();
