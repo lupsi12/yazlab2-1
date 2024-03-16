@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/part")
 @AllArgsConstructor
@@ -23,37 +24,42 @@ public class PartController {
     @Autowired
     PartService partService;
 
-
+    @RequestMapping(method = RequestMethod.GET)
     @GetMapping
     public List<Part> getAllPart(){
         return partService.getAllPart();
     }
 
 
+    @RequestMapping(method = RequestMethod.GET, path = "/{partId}")
     @GetMapping("/{partId}")
     public Part getOnePart(@PathVariable Long partId){
         return partService.getPartById(partId);
     }
 
 
+    @RequestMapping(method = RequestMethod.POST)
     @PostMapping
     public Part addPart(@RequestBody Part part){
         return partService.addPart(part);
     }
 
 
+    @RequestMapping(method = RequestMethod.PUT, path = "/{partId}")
     @PutMapping("/{partId}")
     public  Part updatePart(@PathVariable Long partId, @RequestBody PartUpdateRequest partUpdateRequest){
         return partService.updatePart(partId,partUpdateRequest);
     }
 
 
+    @RequestMapping(method = RequestMethod.DELETE, path = "/{partId}")
     @DeleteMapping("/{partId}")
     public void deleteOnePart(@PathVariable Long partId){
         partService.deletePart(partId);
     }
 
 
+    @RequestMapping(method = RequestMethod.DELETE)
     @DeleteMapping
     public void deleteAllReferans(){
         partService.deleteAllPart();
