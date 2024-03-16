@@ -1,5 +1,5 @@
 HELP.md
-*.pdf
+pdf/*
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
