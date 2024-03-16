@@ -553,6 +553,9 @@ public class SearchAndScrapper
             URL url = new URL(link);
             ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
 
+            File dir = new File("./pdf");
+            if(!dir.exists()) dir.mkdir();
+
             filename = filename.replaceAll("[/\\\\:*?\"<>|]", " ");
             FileOutputStream fileOutputStream = new FileOutputStream("./pdf/" + filename + ".pdf");
             FileChannel fileChannel = fileOutputStream.getChannel();
