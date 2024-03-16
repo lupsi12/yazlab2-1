@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="./bootstrap-5.3.2-dist/css/bootstrap.css">
+		<script src="search.js"></script> 
+		<title>
+			KEFALsoft Akademik
+		</title>
+	</head>
+	
+	<body onload="onLoad();">
+		<div class="bg-image mh-100" style="background: url('bg-dark-80.png') center center fixed; height: 120vh;">
+			<div class="container text-white text-center py-3 position-absolute start-50 translate-middle-x">
+				<h1>
+					KEFALsoft Akademik
+				</h1>
+				<br/>
+				<div class="row justify-content-md-end">
+					<div class="col-1" title="Anasayfa">
+						<button type="button" class="btn btn-outline-light" onclick="window.location.assign('./main.html')">
+							&#127968;
+						</button>
+					</div>
+					<div class="col-10" >
+						<input type="text" class="form-control" id="searchText" placeholder="Akademik dünyanın sırları">
+					</div>
+					<div class="col-1" >
+						<button type="button" class="btn btn-outline-light" onclick="SearchArticle()">
+							Ara
+						</button>
+					</div>
+					<!--<div class="col" >
+						<button type="button" class="btn btn-light" id="autoPdfButton" onclick="ToggleAutoPDF()">
+							PDF'leri Otomatik İndir
+						</button>
+					</div>-->
+				</div>
+				
+				<div class="text-success" id="typoText">
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
