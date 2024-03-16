@@ -19,7 +19,8 @@ public class Part {
 
     private String kelime;
     private String duzelenKelime = kelime+" -- yazımı düzeltilmiş sonuçları görüyorsunuz";
-    private boolean durum;
+    private boolean autoPdf;
+    private boolean hazir;
 
     public Part(Part p) {
     }

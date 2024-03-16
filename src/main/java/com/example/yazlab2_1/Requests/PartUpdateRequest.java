@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class PartUpdateRequest {
     private String kelime;
     private String duzelenKelime = kelime+" -- yazımı düzeltilmiş sonuçları görüyorsunuz";
-    private boolean durum;
+    private boolean autoPdf;
+    private boolean hazir;
 }
