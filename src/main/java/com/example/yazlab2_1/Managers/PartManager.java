@@ -41,12 +41,17 @@ public class PartManager implements PartService {
         Part newPart = new Part();
         newPart.setId(sequenceGeneratorService.getSquenceNumber(part.SEQUENCE_NAME));
         newPart.setKelime(part.getKelime());
+        newPart.setDuzelenKelime(part.getDuzelenKelime());
         newPart.setAutoPdf(part.isAutoPdf());
         newPart.setHazir(part.isHazir());
-        newPart.setDuzelenKelime(part.getDuzelenKelime());
+        newPart.setEnableSerpAPI(part.isEnableSerpAPI());
+        newPart.setMaxArticleCount(part.getMaxArticleCount());
+        newPart.setFoundArticleCount(part.getFoundArticleCount());
 
         Part savedPart = partRepo.save(newPart);
-        SearchAndScrapper.SearchAndScrap(savedPart);
+        //SearchAndScrapper.SearchAndScrap(savedPart);
+        new Thread(new SearchAndScrapper(savedPart)).start();
+
         return savedPart;
     }
 
@@ -65,10 +70,14 @@ public class PartManager implements PartService {
         Optional<Part> part = partRepo.findById(id);
         if(part.isPresent()){
             Part foundPart = part.get();
-            foundPart.setAutoPdf(partUpdateRequest.isAutoPdf());
-            foundPart.setHazir(partUpdateRequest.isHazir());
             foundPart.setKelime(partUpdateRequest.getKelime());
             foundPart.setDuzelenKelime(partUpdateRequest.getDuzelenKelime());
+            foundPart.setAutoPdf(partUpdateRequest.isAutoPdf());
+            foundPart.setHazir(partUpdateRequest.isHazir());
+            foundPart.setEnableSerpAPI(partUpdateRequest.isEnableSerpAPI());
+            foundPart.setMaxArticleCount(partUpdateRequest.getMaxArticleCount());
+            foundPart.setFoundArticleCount(partUpdateRequest.getFoundArticleCount());
+
             partRepo.save(foundPart);
             return foundPart;
         }else

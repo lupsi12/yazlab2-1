@@ -23,43 +23,64 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SearchAndScrapper
+public class SearchAndScrapper implements Runnable
 {
-    public static final int MAX_ARTICLES = 10;
-    public static final boolean enableSerpAPI = false;
+    public static int MAX_ARTICLES;
+    public static boolean enableSerpAPI;
     public static final String serpAPIKey = "d4ac059996ec99c5af3591f253fefa66591ae5b8bc88326aacb379e535af4535";
+    public Part searchPart;
+
+    public SearchAndScrapper(Part searchPart)
+    {
+        this.searchPart = searchPart;
+    }
+
+    public void run()
+    {
+        SearchAndScrap(this.searchPart);
+    }
 
     public static void SearchAndScrap(Part searchThing)
     {
         String keyword = searchThing.getKelime();
+        MAX_ARTICLES = searchThing.getMaxArticleCount();
+        enableSerpAPI = searchThing.isEnableSerpAPI();
 
         try {
-            if (keyword.equals("<<delete>>")) {
+            /*if (keyword.equals("<<delete>>"))
+            {
                 DeleteAllArticles();
-            } else {
-                String correctedKeyword = SpellCheck(keyword);
-                searchThing.setDuzelenKelime(correctedKeyword);
-                UpdatePart(searchThing);
-
-                ArrayList<SearchResult> articleResults = SearchArticles(correctedKeyword);
-                ArrayList<ArticleStruct> articles = new ArrayList<>();
-
-                for (SearchResult result : articleResults) {
-                    System.out.println("\n[" + result.keyword + "] " + result.title + " - " + result.url);
-                    ArticleStruct articleStruct = GetArticleData(result);
-                    articles.add(articleStruct);
-                    System.out.println(articleStruct);
-                }
-
-                if (searchThing.isAutoPdf()) {
-                    for (ArticleStruct article : articles) {
-                        DownloadPDF(article.pdfLink, article.yayinAd);
-                    }
-                }
-
-                searchThing.setHazir(true);
-                UpdatePart(searchThing);
             }
+            else
+            {*/
+            String correctedKeyword = SpellCheck(keyword);
+            searchThing.setDuzelenKelime(correctedKeyword);
+            //UpdatePart(searchThing);
+
+            ArrayList<SearchResult> articleResults = SearchArticles(correctedKeyword);
+            ArrayList<ArticleStruct> articles = new ArrayList<>();
+
+            int articleCount = articleResults.size();
+            searchThing.setFoundArticleCount(articleCount);
+            System.out.println("\n" + articleCount + " tane sonuç bulundu.");
+            //UpdatePart(searchThing);
+
+            for (SearchResult result : articleResults) {
+                System.out.println("\n[" + result.keyword + "] " + result.title + " - " + result.url);
+                ArticleStruct articleStruct = GetArticleData(result);
+                articles.add(articleStruct);
+                System.out.println(articleStruct);
+            }
+
+            if (searchThing.isAutoPdf()) {
+                for (ArticleStruct article : articles) {
+                    DownloadPDF(article.pdfLink, article.yayinAd);
+                }
+            }
+
+            searchThing.setHazir(true);
+            UpdatePart(searchThing);
+            //}
         }
         catch (Exception e)
         {
@@ -81,6 +102,8 @@ public class SearchAndScrapper
         partJson.put("duzelenKelime", part.getDuzelenKelime());
         partJson.put("autoPdf", part.isAutoPdf());
         partJson.put("hazir", part.isHazir());
+        partJson.put("maxArticleCount", part.getMaxArticleCount());
+        partJson.put("foundArticleCount", part.getFoundArticleCount());
 
         String partString = partJson.toString();
 
@@ -251,13 +274,14 @@ public class SearchAndScrapper
             }
             else
             {
-                System.out.println("\n\"" + keyword + "\" için imla kontrolü başarısız oldu. HTTP cevabı: " + responseCode);
+                System.err.println("\n\"" + keyword + "\" için imla kontrolü başarısız oldu. HTTP cevabı: " + responseCode);
+                if(responseCode == 429) System.err.println("SerpAPI tarafından sunulan API anahtarının geçerlilik süresi dolmuştur. \nPlanınızı yükselterek SerpAPI avantajlarından yararlanmaya devam edebilirsiniz.");
             }
             dialup.disconnect();
         }
         else
         {
-            System.out.println("SerpAPI etkinleştirilmemiş. İmla kontrolü yapılmadan devam ediliyor.");
+            System.out.println("\nSerpAPI etkinleştirilmemiş. İmla kontrolü yapılmadan devam ediliyor.");
         }
 
         return correctSpell;
@@ -320,6 +344,11 @@ public class SearchAndScrapper
                 }
             }
         }
+        else
+        {
+            System.err.println("Makale güncelleme başarısız oldu. HTTP cevabı: " + responseCode);
+            if(responseCode == 429) System.err.println("SerpAPI tarafından sunulan API anahtarının geçerlilik süresi dolmuştur. \nPlanınızı yükselterek SerpAPI avantajlarından yararlanmaya devam edebilirsiniz.");
+        }
         dialup.disconnect();
 
         return article;
@@ -365,6 +394,7 @@ public class SearchAndScrapper
             {
                 if(articleCount >= MAX_ARTICLES) break;
 
+                //System.out.println("Makale Adı: " + articleData.text());
                 searchResults.add(new SearchResult(keyword, articleData.attr("href"), articleData.text()));
                 articleCount++;
             }
@@ -395,6 +425,7 @@ public class SearchAndScrapper
         InputStream inputStream = (responseCode <= 309) ? dialup.getInputStream() : dialup.getErrorStream();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         boolean redirection = (responseCode >= 300 && responseCode <= 309);
+        if(redirection) System.out.println("\nBaşka sayfaya yönlendiriliyor...");
 
         String line;
         StringBuilder htmlBuilder = new StringBuilder();
@@ -536,7 +567,7 @@ public class SearchAndScrapper
         }
 
         if(enableSerpAPI) articleStruct = UpdateArticleFromSerpia(articleStruct);
-        else System.out.println("SerpAPI etkinleştirilmemiş. Yayıncı adı ve alıntı sayısı güncellenmeden devam ediliyor.");
+        else System.out.println("\nSerpAPI etkinleştirilmemiş. Yayıncı adı ve alıntı sayısı güncellenmeden devam ediliyor.");
 
         int articleID = SaveArticleToDB(articleStruct);
         //System.out.println("Reference: " + articleStruct.references);

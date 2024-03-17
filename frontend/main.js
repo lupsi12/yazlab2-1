@@ -1,3 +1,6 @@
+const MAX_ARTICLE = 10;
+const enableSerbia = true;
+
 let articleArray = [];
 //const tableRowClasses = "bg-transparent text-white align-middle";
 const tableRowClasses = "align-middle";
@@ -109,8 +112,8 @@ async function SearchArticle()
 	
 	if(searchKeywords.length > 0)
 	{
-		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false };
-		let response = fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
+		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false, enableSerpAPI: enableSerbia, maxArticleCount: MAX_ARTICLE, foundArticleCount: 0 };
+		let response = await fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
 		let responseJson = await response.json();
 		console.log(responseJson);
 

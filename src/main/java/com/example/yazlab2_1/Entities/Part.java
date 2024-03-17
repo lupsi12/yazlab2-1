@@ -18,9 +18,12 @@ public class Part {
     private Long id;
 
     private String kelime;
-    private String duzelenKelime = kelime+" -- yazımı düzeltilmiş sonuçları görüyorsunuz";
+    private String duzelenKelime;
     private boolean autoPdf;
     private boolean hazir;
+    private boolean enableSerpAPI;
+    private int maxArticleCount;
+    private int foundArticleCount;
 
     public Part(Part p) {
     }
