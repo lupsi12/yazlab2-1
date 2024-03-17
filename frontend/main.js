@@ -16,9 +16,9 @@ async function onLoad()
 	
 	const linkString = window.location.search;
 	const linkParameters = new URLSearchParams(linkString);
-	if(linkParameters.has("devMode"))
+	if(linkParameters.has("dev_cmd"))
 	{
-		const devMode = linkParameters.get("devMode");
+		const devMode = linkParameters.get("dev_cmd");
 		if(devMode === "DROPTABLES")
 		{
 			if(window.confirm("Veritabanındaki tüm makaleleri gerçekten silmek istiyor musunuz? Bu işlem geri alınamaz!") == true)
@@ -110,12 +110,15 @@ async function SearchArticle()
 	if(searchKeywords.length > 0)
 	{
 		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false };
-		let response = await fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
+		let response = fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
 		let responseJson = await response.json();
 		console.log(responseJson);
-		
-		let searchID = responseJson.id;
-		window.location.assign("./search.html?searchID=" + searchID);
+
+		//fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
+		//setTimeout(() => { console.log(""); }, 1000);
+
+		window.location.assign("./search.html?searchID=" + responseJson.id);
+		//window.location.assign("./search.html");
 	}
 }
 
