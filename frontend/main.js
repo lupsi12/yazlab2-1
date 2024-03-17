@@ -128,7 +128,7 @@ function InvertNameSort()
 	document.getElementById("tableArticleName").innerHTML = "Makale Adı " + ((namesAscending == true) ? "/\\" : "\\/");
 	//document.getElementById("tableCitation").innerHTML = "Alıntı Sayısı";
 	document.getElementById("tableCitation").innerHTML = "Alıntılar";
-	document.getElementById("tableArticleDate").innerHTML = "Yayın Tarihi";
+	document.getElementById("tableArticleDate").innerHTML = "Yayımlanma Tarihi";
 	
 	articleArray = SortArticlesByName(articleArray);
 	DropTable();
@@ -144,7 +144,7 @@ function InvertCiteSort()
 	//document.getElementById("tableCitation").innerHTML = "Alıntı Sayısı " + ((citesAscending == true) ? "/\\" : "\\/");
 	document.getElementById("tableCitation").innerHTML = "Alıntılar " + ((citesAscending == true) ? "/\\" : "\\/");
 	document.getElementById("tableArticleName").innerHTML = "Makale Adı";
-	document.getElementById("tableArticleDate").innerHTML = "Yayın Tarihi";
+	document.getElementById("tableArticleDate").innerHTML = "Yayımlanma Tarihi";
 	
 	articleArray = SortArticlesByCite(articleArray);
 	DropTable();
@@ -157,7 +157,7 @@ function InvertDateSort()
 	namesAscending = false;
 	citesAscending = false;
 	
-	document.getElementById("tableArticleDate").innerHTML = "Yayın Tarihi " + ((datesAscending == true) ? "/\\" : "\\/");
+	document.getElementById("tableArticleDate").innerHTML = "Yayımlanma Tarihi " + ((datesAscending == true) ? "/\\" : "\\/");
 	document.getElementById("tableArticleName").innerHTML = "Makale Adı";
 	//document.getElementById("tableCitation").innerHTML = "Alıntı Sayısı";
 	document.getElementById("tableCitation").innerHTML = "Alıntılar";
@@ -297,7 +297,9 @@ function AddArticleToArticleTable(value, index, array)
 	// Yayın tarihi
 	let publicationDate = satir.insertCell(-1);
 	publicationDate.className = tableRowClasses;
-	yazi = document.createTextNode(value.yayinTarih);
+	let date = new Date(value.yayinTarih);
+	let monthArr = [" Ocak ", " Şubat ", " Mart ", " Nisan ", " Mayıs ", " Haziran ", " Temmuz ", " Ağustos ", " Eylül ", " Ekim ", " Kasın ", " Aralık "];
+	yazi = document.createTextNode(date.getDate() + monthArr[date.getMonth()] + date.getFullYear());
 	publicationDate.appendChild(yazi);
 	
 	// Yayıncı adı

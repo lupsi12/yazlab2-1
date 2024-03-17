@@ -1,4 +1,4 @@
-const MAX_ARTICLES = 3;
+const MAX_ARTICLES = 10;
 
 async function onLoad()
 {

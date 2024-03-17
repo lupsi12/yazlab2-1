@@ -1,12 +1,6 @@
 package com.example.yazlab2_1;
 
-import co.elastic.clients.elasticsearch.nodes.Http;
-import com.example.yazlab2_1.Controllers.PartController;
 import com.example.yazlab2_1.Entities.Part;
-import com.example.yazlab2_1.Services.PartService;
-import org.apache.pdfbox.Loader;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.text.PDFTextStripper;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,7 +25,8 @@ import java.util.regex.Pattern;
 
 public class SearchAndScrapper
 {
-    public static final int MAX_ARTICLES = 3;
+    public static final int MAX_ARTICLES = 10;
+    public static final boolean enableSerpAPI = false;
     public static final String serpAPIKey = "d4ac059996ec99c5af3591f253fefa66591ae5b8bc88326aacb379e535af4535";
 
     public static void SearchAndScrap(Part searchThing)
@@ -68,6 +63,7 @@ public class SearchAndScrapper
         }
         catch (Exception e)
         {
+            System.err.println("Makale arama veya web scraping sırasında bir hata oluştu.");
             e.printStackTrace();
         }
     }
@@ -181,29 +177,29 @@ public class SearchAndScrapper
 
     public static void DeleteAllArticles() throws IOException
     {
-        HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:8080/referans").openConnection();
-        connection.setRequestMethod("DELETE");
-        connection.setDoOutput(true);
-        connection.getResponseCode();
-        connection.disconnect();
+        HttpURLConnection dialup = (HttpURLConnection) new URL("http://localhost:8080/referans").openConnection();
+        dialup.setRequestMethod("DELETE");
+        dialup.setDoOutput(true);
+        dialup.getResponseCode();
+        dialup.disconnect();
 
-        connection = (HttpURLConnection) new URL("http://localhost:8080/veri").openConnection();
-        connection.setRequestMethod("DELETE");
-        connection.setDoOutput(true);
-        connection.getResponseCode();
-        connection.disconnect();
+        dialup = (HttpURLConnection) new URL("http://localhost:8080/veri").openConnection();
+        dialup.setRequestMethod("DELETE");
+        dialup.setDoOutput(true);
+        dialup.getResponseCode();
+        dialup.disconnect();
 
-        connection = (HttpURLConnection) new URL("http://localhost:8080/sequence").openConnection();
-        connection.setRequestMethod("DELETE");
-        connection.setDoOutput(true);
-        connection.getResponseCode();
-        connection.disconnect();
+        dialup = (HttpURLConnection) new URL("http://localhost:8080/sequence").openConnection();
+        dialup.setRequestMethod("DELETE");
+        dialup.setDoOutput(true);
+        dialup.getResponseCode();
+        dialup.disconnect();
 
-        connection = (HttpURLConnection) new URL("http://localhost:8080/part").openConnection();
-        connection.setRequestMethod("DELETE");
-        connection.setDoOutput(true);
-        connection.getResponseCode();
-        connection.disconnect();
+        dialup = (HttpURLConnection) new URL("http://localhost:8080/part").openConnection();
+        dialup.setRequestMethod("DELETE");
+        dialup.setDoOutput(true);
+        dialup.getResponseCode();
+        dialup.disconnect();
 
         System.out.println("Tüm makaleler veritabanından silindi.");
     }
@@ -211,50 +207,58 @@ public class SearchAndScrapper
     public static String SpellCheck(String keyword) throws IOException
     {
         String correctSpell = keyword;
-        String spellURL = "https://serpapi.com/search.html?engine=google_scholar&q=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8) + "&api_key=";
-        System.out.println("\nİmla kontrolü için bekleniyor - " + spellURL);
 
-        HttpURLConnection dialup = (HttpURLConnection) new URL(spellURL + serpAPIKey).openConnection();
-        int responseCode = dialup.getResponseCode();
-
-        System.out.println("HTTP cevabı: " + responseCode);
-
-        if(responseCode <= 309)
+        if(enableSerpAPI)
         {
-            StringBuilder serpHtmlBuilder = new StringBuilder();
-            String line;
+            String spellURL = "https://serpapi.com/search.html?engine=google_scholar&q=" + URLEncoder.encode(keyword, StandardCharsets.UTF_8) + "&api_key=";
+            System.out.println("\nİmla kontrolü için bekleniyor - " + spellURL);
 
-            InputStream inputStream = dialup.getInputStream();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            HttpURLConnection dialup = (HttpURLConnection) new URL(spellURL + serpAPIKey).openConnection();
+            int responseCode = dialup.getResponseCode();
 
-            while((line = bufferedReader.readLine()) != null)
+            System.out.println("HTTP cevabı: " + responseCode);
+
+            if(responseCode <= 309)
             {
-                serpHtmlBuilder.append(line.strip());
+                StringBuilder serpHtmlBuilder = new StringBuilder();
+                String line;
+
+                InputStream inputStream = dialup.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+                while((line = bufferedReader.readLine()) != null)
+                {
+                    serpHtmlBuilder.append(line.strip());
+                }
+
+                bufferedReader.close();
+                inputStream.close();
+
+                //System.out.println("\nİmla kontrolü için alınan HTML:");
+                //System.out.println(serpHtmlBuilder);
+
+                String serpHtml = serpHtmlBuilder.toString();
+
+                Document spellDocument = Jsoup.parse(serpHtml);
+                Element spellBar = spellDocument.selectFirst("div#gs_res_ccl_top > div.gs_r > h2.gs_rt > a");
+
+                if (spellBar != null)
+                {
+                    correctSpell = spellBar.text();
+                    System.out.println("\n\"" + keyword + "\" yerine \"" + correctSpell + "\" aranıyor.");
+                }
+                //else System.out.println("\nİmla zımbırtısı bulunamadı.");
             }
-
-            bufferedReader.close();
-            inputStream.close();
-
-            //System.out.println("\nİmla kontrolü için alınan HTML:");
-            //System.out.println(serpHtmlBuilder);
-
-            String serpHtml = serpHtmlBuilder.toString();
-
-            Document spellDocument = Jsoup.parse(serpHtml);
-            Element spellBar = spellDocument.selectFirst("div#gs_res_ccl_top > div.gs_r > h2.gs_rt > a");
-
-            if (spellBar != null)
+            else
             {
-                correctSpell = spellBar.text();
-                System.out.println("\n\"" + keyword + "\" yerine \"" + correctSpell + "\" aranıyor.");
+                System.out.println("\n\"" + keyword + "\" için imla kontrolü başarısız oldu. HTTP cevabı: " + responseCode);
             }
-            //else System.out.println("\nİmla zımbırtısı bulunamadı.");
+            dialup.disconnect();
         }
         else
         {
-            System.out.println("\n\"" + keyword + "\" için imla kontrolü başarısız oldu. HTTP cevabı: " + responseCode);
+            System.out.println("SerpAPI etkinleştirilmemiş. İmla kontrolü yapılmadan devam ediliyor.");
         }
-        dialup.disconnect();
 
         return correctSpell;
     }
@@ -285,8 +289,6 @@ public class SearchAndScrapper
             }
 
             serpHtmlString = serpHtmlBuilder.toString();
-            //System.out.println("Makale güncellemesi için alınan HTML:");
-            //System.out.println(serpHtmlString);
 
             bufferedReader.close();
             inputStream.close();
@@ -301,17 +303,6 @@ public class SearchAndScrapper
             }
 
             Document updateDocument = Jsoup.parse(serpHtmlString);
-            /*Element publicationElement = updateDocument.selectFirst("div.gs_a, .gs_fma_p");
-
-            if(publicationElement != null)
-            {
-                System.out.println("publicationElement.wholeOwnText(): " + publicationElement.wholeOwnText());
-
-                String publicationString = publicationElement.ownText();
-                publicationString = publicationString.replaceAll("dergipark.org.tr", "");
-                article.yayinciAdi = publicationString;
-                System.out.println("Yeni yayıncı adı: " + publicationString);
-            }*/
 
             Element citationElement = updateDocument.selectFirst("a[href^=/scholar?cites=]");
             if(citationElement != null)
@@ -393,6 +384,8 @@ public class SearchAndScrapper
         articleStruct.urlAdresi = article.url;
         articleStruct.yayinAd = article.title;
         System.out.println("Makale sitesi bekleniyor - " + article.url);
+
+        ArrayList<String> referenceList = new ArrayList<>();
 
         URL articleURL = new URL(article.url);
         HttpURLConnection dialup = (HttpURLConnection) articleURL.openConnection();
@@ -491,7 +484,15 @@ public class SearchAndScrapper
             Element referenceElement = document.selectFirst("div.active > div.article-citations > div");
             if(referenceElement != null)
             {
-                articleStruct.references = referenceElement.text();
+                Elements references = referenceElement.select("ul > li");
+                if(!references.isEmpty())
+                {
+                    for(Element ref : references)
+                    {
+                        referenceList.add(ref.ownText());
+                    }
+                }
+                else referenceList.add(referenceElement.text());
             }
 
             // Get details
@@ -534,11 +535,16 @@ public class SearchAndScrapper
             }
         }
 
-        articleStruct = UpdateArticleFromSerpia(articleStruct);
+        if(enableSerpAPI) articleStruct = UpdateArticleFromSerpia(articleStruct);
+        else System.out.println("SerpAPI etkinleştirilmemiş. Yayıncı adı ve alıntı sayısı güncellenmeden devam ediliyor.");
 
         int articleID = SaveArticleToDB(articleStruct);
         //System.out.println("Reference: " + articleStruct.references);
-        SaveReferenceToDB(articleStruct.references, articleID);
+        //SaveReferenceToDB(articleStruct.references, articleID);
+        for(String ref : referenceList)
+        {
+            SaveReferenceToDB(ref, articleID);
+        }
 
         return articleStruct;
     }
@@ -564,18 +570,5 @@ public class SearchAndScrapper
             System.out.println("PDF indirildi   | " + filename);
         }
         else System.out.println(link + " adresindeki PDF bulunamadı. İlgili adres mevcut değil.");
-    }
-
-    public static String ReadPDF(String filename) throws IOException
-    {
-        filename = filename.replaceAll("[/\\\\:*?\"<>|]", " ");
-
-        File file = new File("./pdf/" + filename + ".pdf");
-        PDDocument document = Loader.loadPDF(file);
-        PDFTextStripper stripper = new PDFTextStripper();
-        String text = stripper.getText(document);
-        document.close();
-
-        return text;
     }
 }

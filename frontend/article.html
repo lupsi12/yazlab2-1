@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<link rel="stylesheet" href="./bootstrap-5.3.2-dist/css/bootstrap.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 		<script src="./article.js"></script> 
 		<title>
 			KEFALsoft Akademik
@@ -9,15 +10,209 @@
 	</head>
 	
 	<body onload="onLoad();">
-		<div class="bg-image mh-100" style="background: url('./bg-dark-80.png') center center fixed; height: 100vh;">
-			<div class="container text-white text-center py-3 position-absolute start-50 translate-middle-x">
-				<button type="button" class="btn btn-outline-light" style="width: 100%;" onclick="window.location.assign('./main.html');">
+		<div class="bg-image mh-100" style="background: url('./bg-dark-80.png') center center fixed; height: 190vh;">
+			<div class="container text-white py-5 position-absolute start-50 translate-middle-x">
+				<!--<button type="button" class="btn btn-outline-light" style="width: 100%;" onclick="window.location.assign('./main.html');">
 					Anasayfaya Dön
 				</button>
-				<hr/>
-				<h1 id="articleName">
-				</h1>
+				<hr/>-->
+				<div class="row">
+					<div class="col" title="Anasayfaya Dön">
+						<button type="button" class="btn btn-outline-light" onclick="window.location.assign('./main.html')">
+							&#127968;
+						</button>
+					</div>
+					<div class="col-11 text-center">
+						<h1 id="articleName">
+						</h1>
+					</div>
+				</div>
 				<br/>
+				<br/>
+				<div class="row">
+					<div class="col">
+						<button type="button" class="btn btn-outline-light" style="width: 100%" onclick="GoToArticle();" id="goToArticleButton">
+							Makaleye Git
+							<span class="fa">
+								&#xf08e;
+							</span>
+						</button>
+					</div>
+					<div class="col">
+						<button type="button" class="btn btn-outline-light" style="width: 100%" onclick="OpenPDF();" id="openPdfButton">
+							PDF'i Aç
+							<span class="fa">
+								&#xf08e;
+							</span>
+						</button>
+					</div>
+				</div>
+				<br/>
+
+				<!-- Makale Bilgileri -->
+				<div class="row" style="height: auto;">
+
+					<!-- Diğer Bilgiler -->
+					<div class="col" style="max-width: 50%;">
+
+						<!-- Yazarlar -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Yazarlar
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="authorsText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Makale Türü -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Makale Türü
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="articleTypeText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Yayınlanma Tarihi -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Yayımlanma Tarihi
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="publicationDateText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Yayıncı Adı -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Yayıncı Adı
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="publisherText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Arama Anahtar Kelimeleri -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Arama Anahtar Kelimeleri
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="searchKeywordsText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Makale Anahtar Kelimeleri -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Makale Anahtar Kelimeleri
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="articleKeywordsText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Alıntı Sayısı -->
+						<div class="card bg-transparent border-light mb-1">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										Alıntı Sayısı
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="citationsText">
+										0
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- DOI Numarası -->
+						<div class="card bg-transparent border-light">
+							<div class="row g-0">
+								<div class="col text-center align-middle">
+									<div class="card-header text-white">
+										DOI Numarası
+									</div>
+								</div>
+								<div class="col-9">
+									<div class="card-body bg-light" style="height: 100%;" id="doiText">
+										Yok
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Özet -->
+					<div class="col" style="max-width: 50%">
+						<div class="card bg-transparent border-light" style="width: 100%; height: 100%;">
+							<div class="card-header text-white text-center border-light">
+								Özet
+							</div>
+							<div class="card-body bg-light" style="max-height: 482px; height: 100%; overflow: auto; display: inline-block;" id="abstractText">
+								Yok
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<br/>
+				<br/>
+
+				<h2 class="text-center text-white">
+					Referanslar
+				</h2>
+				<br/>
+				<div style="max-height: 700px; max-width: 100%; overflow: auto; display: inline-block;" id="referenceList">
+				</div>
+				<br/>
+				<br/>
+				<footer class="align-bottom text-center text-white">
+					<p>
+						©2024 KEFALsoft Limited - Bu web sitesi Kocaeli Üniversitesi Bilgisayar Mühendisliği Yazılım Laboratuvarı II Proje 1 için yapılmıştır.
+					</p>
+				</footer>
 			</div>
 		</div>
 	</body>
