@@ -591,7 +591,7 @@ public class SearchAndScrapper implements Runnable
 
     public static void DownloadPDF(String link, String filename) throws IOException, InterruptedException
     {
-        if(!link.isEmpty())
+        if(link != null && !link.isEmpty())
         {
             File dir = new File("./pdf");
             if(!dir.exists()) dir.mkdir();

@@ -104,5 +104,9 @@ async function CheckIfPdfDownloaded()
             document.getElementById("openPdfButton").removeAttribute("disabled");
             document.getElementById("openPdfButton").innerHTML = 'PDF <span class="fa">&#xf08e;</span>';
         }
+        else
+        {
+            document.getElementById("openPdfButton").innerHTML = 'PDF Bulunamadı';
+        }
 	}
 }

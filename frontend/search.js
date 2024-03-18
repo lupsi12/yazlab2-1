@@ -86,12 +86,15 @@ function AddResultToList(value, index, array)
     resultCardAuthors.appendChild(resultCardAuthorsText);
 
     // Özetin Özeti
-    let resultCardAbstract = document.createElement("p");
-    resultCardAbstract.classList.add("card-text");
-    resultCardBody.appendChild(resultCardAbstract);
+    if(value.ozet != null)
+    {
+        let resultCardAbstract = document.createElement("p");
+        resultCardAbstract.classList.add("card-text");
+        resultCardBody.appendChild(resultCardAbstract);
 
-    let resultCardAbstractText = document.createTextNode(value.ozet.slice(0, 200) + "...");
-    resultCardAbstract.appendChild(resultCardAbstractText);
+        let resultCardAbstractText = document.createTextNode(value.ozet.slice(0, 200) + "...");
+        resultCardAbstract.appendChild(resultCardAbstractText);
+    }
 
     // Card Footer
     let resultCardFooter = document.createElement("div");
@@ -134,6 +137,10 @@ function AddResultToList(value, index, array)
 
 async function CheckIfReady()
 {
+    document.getElementById("mainPageButton").setAttribute("disabled", "");
+    document.getElementById("searchButton").setAttribute("disabled", "");
+    document.getElementById("searchText").setAttribute("readonly", "");
+
     document.getElementById("typoText").innerHTML = 'Arama yapılıyor&nbsp; <span class="font-monospace">' + waitingSymbols[waitingState] + '</span>';
     waitingState = (waitingState + 1) % 4;
 
@@ -149,6 +156,10 @@ async function CheckIfReady()
         clearInterval(checkIfReadyInterval);
         foundArticles = jsonRes.foundArticleCount;
         console.log(jsonRes);
+
+        document.getElementById("mainPageButton").removeAttribute("disabled");
+        document.getElementById("searchButton").removeAttribute("disabled");
+        document.getElementById("searchText").removeAttribute("readonly");
 
         if(foundArticles === 0)
         {
