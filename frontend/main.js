@@ -2,7 +2,6 @@ const MAX_ARTICLE = 10;
 const enableSerbia = true;
 
 let articleArray = [];
-//const tableRowClasses = "bg-transparent text-white align-middle";
 const tableRowClasses = "align-middle";
 
 let namesAscending = false;
@@ -44,6 +43,7 @@ async function onLoad()
 	if(articleArray.length > 0)
 	{
 		console.log(articleArray);
+		articleArray = RemoveDuplicateArticles(articleArray);
 		InvertNameSort();
 		document.getElementById("articlesInDatabaseTitle").innerHTML = "Kayıtlı Makaleler - " + articleArray.length + " Adet";
 		document.getElementById("savedArticles").classList.remove("d-none");
@@ -56,7 +56,7 @@ async function onLoad()
 	}
 }
 
-function ClearAllFilters()
+async function ClearAllFilters()
 {
     document.getElementById("filterText").value = "";
     document.getElementById("filterArticleName").value = "";
@@ -69,24 +69,52 @@ function ClearAllFilters()
     document.getElementById("filterCitations").value = "";
     document.getElementById("filterDoi").value = "";
 
-    DropTable();
-    articleArray.forEach(AddArticleToArticleTable);
+	let response = await fetch("http://localhost:8080/veri");
+	articleArray = await response.json();
+
+	articleArray = RemoveDuplicateArticles(articleArray);
+	namesAscending = false;
+	InvertNameSort();
+
+	document.getElementById("articlesInDatabaseTitle").innerHTML = "Kayıtlı Makaleler - " + articleArray.length + " Adet";
+	if(articleArray.length === 0)
+	{
+	    document.getElementById("articleTable").classList.add("d-none");
+		document.getElementById("articleNotFoundText").classList.remove("d-none");
+	}
+	else
+	{
+	    document.getElementById("articleTable").classList.remove("d-none");
+		document.getElementById("articleNotFoundText").classList.add("d-none");
+	}
+
+    //DropTable();
+    //articleArray.forEach(AddArticleToArticleTable);
 }
 
 function RemoveDuplicateArticles(articles)
 {
-	/*let uniqueArticles = [];
+	let uniqueArticles = [];
 	
-	for(let i = 0; i < articles.length; i++)
+	for(let a of articles)
 	{
-		if(uniqueArticles.length == 0) uniqueArticles.push(articles[i]);
-		if()
+		if(uniqueArticles.length == 0) uniqueArticles.push(a);
+		else
+		{
+		    let add = true;
+		    for(let u of uniqueArticles)
+		    {
+		        if(a.urlAdresi === u.urlAdresi) add = false;
+		    }
+
+		    if(add) uniqueArticles.push(a);
+		}
 	}
 	
-	return uniqueArticles;*/
+	return uniqueArticles;
 }
 
-function SearchInArticles()
+async function SearchInArticles()
 {
 	let filters = document.getElementById("filterText").value.toLowerCase();
 
@@ -100,54 +128,31 @@ function SearchInArticles()
 	let filterCitations = document.getElementById("filterCitations").value.toLowerCase();
 	let filterDoi = document.getElementById("filterDoi").value.toLowerCase();
 
+	let response = await fetch("http://localhost:8080/veri");
+	articleArray = await response.json();
+
+	articleArray = RemoveDuplicateArticles(articleArray);
+	namesAscending = false;
+	InvertNameSort();
+
 	let filteredArticles = [];
 
 	for(let a of articleArray)
 	{
 	    filteredArticles.push(a);
 	}
-	
-	/*for(let i = 0; i < articleArray.length; i++)
-	{
-		if((articleArray[i].yayinAd.includes(filters) ||
-			articleArray[i].yazarIsim.includes(filters) ||
-			articleArray[i].yayinTur.includes(filters) ||
-			articleArray[i].yayinTarih.includes(filters) ||
-			(articleArray[i].yayinciAdi != null && articleArray[i].yayinciAdi.includes(filters)) ||
-			articleArray[i].aramaAnahtarKelime.includes(filters) ||
-			articleArray[i].makaleAnahtarKelime.includes(filters) ||
-			articleArray[i].alintiSayisi == filters ||
-			(articleArray[i].doiNumarasi != null && articleArray[i].doiNumarasi.includes(filters)) ||
-			articleArray[i].ozet.includes(filters) ||
-			(articleArray[i].urlAdresi != null && articleArray[i].urlAdresi.includes(filters)) ||
-			(articleArray[i].urlLink != null && articleArray[i].urlLink.includes(filters))) ||
 
-			articleArray[i].yayinAd.toLowerCase().includes(filterArticleName) &&
-			articleArray[i].yazarIsim.toLowerCase().includes(filterAuthors) &&
-			articleArray[i].yayinTur.toLowerCase().includes(filterArticleType) &&
-			articleArray[i].yayinTarih.toLowerCase().includes(filterPublicationDate) &&
-			(articleArray[i].yayinciAdi != null && articleArray[i].yayinciAdi.toLowerCase().includes(filterPublisher)) &&
-			articleArray[i].aramaAnahtarKelime.toLowerCase().includes(filterSearchKeywords) &&
-			articleArray[i].makaleAnahtarKelime.toLowerCase().includes(filterArticleKeywords) &&
-			articleArray[i].alintiSayisi.toLowerCase().includes(filterCitations) &&
-			(articleArray[i].doiNumarasi != null && articleArray[i].doiNumarasi.toLowerCase().includes(filterDoi))
-		)
-		{
-			filteredArticles.push(articleArray[i]);
-		}
-	}*/
-
-	console.log("filteredArticles = " + filteredArticles);
+	//console.log("filteredArticles = " + filteredArticles);
 
 	if(filters.length > 0)
 	{
 	    for(let a of filteredArticles)
 	    {
-	        console.log(a);
+	        //console.log(a);
 	        if(!(a.yayinAd.toLowerCase().includes(filters) ||
 	             a.yazarIsim.toLowerCase().includes(filters) ||
 	             a.yayinTur.toLowerCase().includes(filters) ||
-	             a.yayinTarih.toLowerCase().includes(filters) ||
+	             //a.yayinTarih.toLowerCase().includes(filters) ||
 	             //a.yayinciAdi.toLowerCase().includes(filters) ||
 	             a.aramaAnahtarKelime.toLowerCase().includes(filters) ||
 	             //a.makaleAnahtarKelime.toLowerCase().includes(filters) ||
@@ -158,26 +163,48 @@ function SearchInArticles()
 	             //a.urlLink.toLowerCase().includes(filters)
 	        ))
 	        {
-	            if(a.yayinciAdi != null && !a.yayinciAdi.toLowerCase().includes(filters))
+	            let toRemove = true;
+
+                if(a.yayinciAdi != null && a.yayinciAdi.toLowerCase().includes(filters))
 	            {
-	                delete filteredArticles[filteredArticles.indexOf(a)];
+	                toRemove = false;
+	                //delete filteredArticles[filteredArticles.indexOf(a)];
 	            }
-	            if(a.makaleAnahtarKelime != null && !a.makaleAnahtarKelime.toLowerCase().includes(filters))
+	            if(a.makaleAnahtarKelime != null && a.makaleAnahtarKelime.toLowerCase().includes(filters))
 	            {
-	                delete filteredArticles[filteredArticles.indexOf(a)];
+	                toRemove = false;
+                    //delete filteredArticles[filteredArticles.indexOf(a)];
 	            }
-	            if(a.doiNumarasi != null && !a.doiNumarasi.toLowerCase().includes(filters))
+	            if(a.doiNumarasi != null && a.doiNumarasi.toLowerCase().includes(filters))
 	            {
-	                delete filteredArticles[filteredArticles.indexOf(a)];
+	                toRemove = false;
+	                //delete filteredArticles[filteredArticles.indexOf(a)];
 	            }
-	            if(a.ozet != null && !a.ozet.toLowerCase().includes(filters))
+	            if(a.ozet != null && a.ozet.toLowerCase().includes(filters))
 	            {
-	                delete filteredArticles[filteredArticles.indexOf(a)];
+	                toRemove = false;
+	                //delete filteredArticles[filteredArticles.indexOf(a)];
 	            }
-	            if(a.urlLink != null && !a.urlLink.toLowerCase().includes(filters))
+	            if(a.urlLink != null && a.urlLink.toLowerCase().includes(filters))
 	            {
-	                delete filteredArticles[filteredArticles.indexOf(a)];
+	                toRemove = false;
+	                //delete filteredArticles[filteredArticles.indexOf(a)];
 	            }
+
+	            //console.log("Yayımlanma tarihi: " + a.yayinTarih);
+                let tempDate = new Date(a.yayinTarih);
+                let monthArr = [" Ocak ", " Şubat ", " Mart ", " Nisan ", " Mayıs ", " Haziran ", " Temmuz ", " Ağustos ", " Eylül ", " Ekim ", " Kasın ", " Aralık "];
+                let dateText = tempDate.getDate() + monthArr[tempDate.getMonth()] + tempDate.getFullYear();
+                //console.log("Yayımlanma tarihi: " + dateText);
+                //console.log("filters: " + filters);
+                //console.log("includes: " + dateText.toLowerCase().includes(filters));
+                if(dateText.toLowerCase().includes(filters))
+                {
+	                toRemove = false;
+                    //delete filteredArticles[filteredArticles.indexOf(a)];
+                }
+
+                if(toRemove) delete filteredArticles[filteredArticles.indexOf(a)];
 	        }
 	    }
 	}
@@ -239,10 +266,20 @@ function SearchInArticles()
 	{
 	    for(let a of filteredArticles)
 	    {
-	        if(!a.yayinTarih.toLowerCase().includes(filterPublicationDate))
+	        /*if(!a.yayinTarih.toLowerCase().includes(filterPublicationDate))
 	        {
 	            delete filteredArticles[filteredArticles.indexOf(a)];
-	        }
+	        }*/
+	        let tempDate = new Date(a.yayinTarih);
+            let monthArr = [" Ocak ", " Şubat ", " Mart ", " Nisan ", " Mayıs ", " Haziran ", " Temmuz ", " Ağustos ", " Eylül ", " Ekim ", " Kasın ", " Aralık "];
+            let dateText = tempDate.getDate() + monthArr[tempDate.getMonth()] + tempDate.getFullYear();
+                console.log("Yayımlanma tarihi: " + dateText);
+                console.log("filterPublicationDate: " + filterPublicationDate);
+                console.log("includes: " + dateText.toLowerCase().includes(filterPublicationDate));
+            if(!dateText.toLowerCase().includes(filterPublicationDate))
+            {
+                delete filteredArticles[filteredArticles.indexOf(a)];
+            }
 	    }
 	}
 
@@ -329,9 +366,24 @@ function SearchInArticles()
 	filteredArticles = filteredArticles.filter(function(element) {
 	    return !!element;
 	});
+
+	articleArray = [];
+	for(let f of filteredArticles) articleArray.push(f);
 	
 	DropTable();
-	filteredArticles.forEach(AddArticleToArticleTable);
+	articleArray.forEach(AddArticleToArticleTable);
+
+	document.getElementById("articlesInDatabaseTitle").innerHTML = "Filtrelenmiş Makaleler - " + articleArray.length + " Adet";
+	if(articleArray.length === 0)
+	{
+	    document.getElementById("articleTable").classList.add("d-none");
+		document.getElementById("articleNotFoundText").classList.remove("d-none");
+	}
+	else
+	{
+	    document.getElementById("articleTable").classList.remove("d-none");
+		document.getElementById("articleNotFoundText").classList.add("d-none");
+	}
 }
 
 function ToggleAutoPDF()
@@ -354,11 +406,7 @@ async function SearchArticle()
 		let responseJson = await response.json();
 		console.log(responseJson);
 
-		//fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
-		//setTimeout(() => { console.log(""); }, 1000);
-
 		window.location.assign("./search.html?searchID=" + responseJson.id);
-		//window.location.assign("./search.html");
 	}
 }
 
@@ -563,12 +611,6 @@ function AddArticleToArticleTable(value, index, array)
 	yazi = document.createTextNode(value.makaleAnahtarKelime);
 	articleKeywords.appendChild(yazi);
 	
-	// Özet
-	/*let tldr = satir.insertCell(-1);
-	tldr.className = tableRowClasses;
-	yazi = document.createTextNode(value.ozet);
-	tldr.appendChild(yazi);*/
-	
 	// Alıntı sayısı
 	let citations = satir.insertCell(-1);
 	citations.className = tableRowClasses;
@@ -580,33 +622,4 @@ function AddArticleToArticleTable(value, index, array)
 	doi.className = tableRowClasses;
 	yazi = document.createTextNode((value.doiNumarasi == null) ? "Yok" : value.doiNumarasi);
 	doi.appendChild(yazi);
-	
-	// Makale linki
-	/*let articleLink = satir.insertCell(-1);
-	articleLink.className = tableRowClasses;
-	if(value.urlAdresi != null)
-	{
-		let a = document.createElement('a');
-		let url = document.createTextNode(value.urlAdresi);
-		a.appendChild(url);
-		a.title = value.urlAdresi;
-		a.href = value.urlAdresi;
-		//a.classList.add("link-success");
-		articleLink.appendChild(a);
-	}
-	
-	// PDF linki
-	let pdfLink = satir.insertCell(-1);
-	pdfLink.className = tableRowClasses;
-	if(value.urlLink != null)
-	{
-		let a = document.createElement('a');
-		let url = document.createTextNode(value.urlLink);
-		a.appendChild(url);
-		a.title = value.urlLink;
-		a.href = value.urlLink;
-		//a.classList.add("link-success");
-		articleLink.appendChild(a);
-		pdfLink.appendChild(a);
-	}*/
 }

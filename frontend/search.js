@@ -39,16 +39,11 @@ function AddResultToList(value, index, array)
     resultCard.classList.add("card");
     resultCard.classList.add("mb-1");
     resultCard.style.width = "99%";
-    //resultCard.classList.add("border-light");
-    //resultCard.classList.add("text-white");
-    //resultCard.classList.add("stretched-link");
-    //resultCard.style.backgroundColor = "rgba(255, 255, 255, 0.4)";
 	resultCard.setAttribute("onclick", "GoToArticle('./article.html?articleID=" + value.id + "');");
     searchResults.appendChild(resultCard);
 
     let hiddenThing = document.createElement("a");
     hiddenThing.href = "#";
-    //hiddenThing.innerHTML = " ";
     hiddenThing.classList.add("stretched-link");
     resultCard.appendChild(hiddenThing);
 
@@ -169,7 +164,6 @@ async function CheckIfReady()
             }
             else
             {
-                //document.getElementById("typoText").innerHTML = "Sonuçlar gösteriliyor: " + jsonRes.kelime;
                 document.getElementById("typoText").classList.add("d-none");
             }
         }
@@ -191,11 +185,7 @@ async function SearchArticle()
 		let responseJson = await response.json();
 		console.log(responseJson);
 
-		//fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
-		//setTimeout(() => { console.log(""); }, 1000);
-
 		window.location.assign("./search.html?searchID=" + responseJson.id);
-		//window.location.assign("./search.html");
 	}
 }
 

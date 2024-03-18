@@ -617,6 +617,10 @@ public class SearchAndScrapper implements Runnable
             }
             else System.out.println("PDF zaten mevcut - " + filename + ".pdf");
         }
-        else System.out.println(link + " adresindeki PDF bulunamadı. İlgili adres mevcut değil.");
+        else
+        {
+            if(searchPart.isDownloadPdfRequest()) searchPart.setDuzelenKelime(null);
+            System.out.println(link + " adresindeki PDF bulunamadı. İlgili adres mevcut değil.");
+        }
     }
 }
