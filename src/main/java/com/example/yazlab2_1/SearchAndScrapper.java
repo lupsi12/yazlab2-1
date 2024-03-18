@@ -28,7 +28,7 @@ public class SearchAndScrapper implements Runnable
     public static int MAX_ARTICLES;
     public static boolean enableSerpAPI;
     public static final String serpAPIKey = "d4ac059996ec99c5af3591f253fefa66591ae5b8bc88326aacb379e535af4535";
-    public Part searchPart;
+    public static Part searchPart;
 
     public SearchAndScrapper(Part searchPart)
     {
@@ -42,45 +42,53 @@ public class SearchAndScrapper implements Runnable
 
     public static void SearchAndScrap(Part searchThing)
     {
-        String keyword = searchThing.getKelime();
-        MAX_ARTICLES = searchThing.getMaxArticleCount();
-        enableSerpAPI = searchThing.isEnableSerpAPI();
+        searchPart = searchThing;
 
-        try {
-            /*if (keyword.equals("<<delete>>"))
+        String keyword = searchPart.getKelime();
+        MAX_ARTICLES = searchPart.getMaxArticleCount();
+        enableSerpAPI = searchPart.isEnableSerpAPI();
+
+        try
+        {
+            if (searchPart.isDownloadPdfRequest())
             {
-                DeleteAllArticles();
+                String pdfUrl = searchPart.getKelime();
+                String pdfName = searchPart.getDuzelenKelime();
+                DownloadPDF(pdfUrl, pdfName);
+
+                searchPart.setHazir(true);
+                UpdatePart(searchPart);
             }
             else
-            {*/
-            String correctedKeyword = SpellCheck(keyword);
-            searchThing.setDuzelenKelime(correctedKeyword);
-            //UpdatePart(searchThing);
+            {
+                String correctedKeyword = SpellCheck(keyword);
+                searchPart.setDuzelenKelime(correctedKeyword);
+                //UpdatePart(searchPart);
 
-            ArrayList<SearchResult> articleResults = SearchArticles(correctedKeyword);
-            ArrayList<ArticleStruct> articles = new ArrayList<>();
+                ArrayList<SearchResult> articleResults = SearchArticles(correctedKeyword);
+                ArrayList<ArticleStruct> articles = new ArrayList<>();
 
-            int articleCount = articleResults.size();
-            searchThing.setFoundArticleCount(articleCount);
-            System.out.println("\n" + articleCount + " tane sonuç bulundu.");
-            //UpdatePart(searchThing);
+                int articleCount = articleResults.size();
+                searchPart.setFoundArticleCount(articleCount);
+                System.out.println("\n" + articleCount + " tane sonuç bulundu.");
+                //UpdatePart(searchPart);
 
-            for (SearchResult result : articleResults) {
-                System.out.println("\n[" + result.keyword + "] " + result.title + " - " + result.url);
-                ArticleStruct articleStruct = GetArticleData(result);
-                articles.add(articleStruct);
-                System.out.println(articleStruct);
-            }
-
-            if (searchThing.isAutoPdf()) {
-                for (ArticleStruct article : articles) {
-                    DownloadPDF(article.pdfLink, article.yayinAd);
+                for (SearchResult result : articleResults) {
+                    System.out.println("\n[" + result.keyword + "] " + result.title + " - " + result.url);
+                    ArticleStruct articleStruct = GetArticleData(result);
+                    articles.add(articleStruct);
+                    System.out.println(articleStruct);
                 }
-            }
 
-            searchThing.setHazir(true);
-            UpdatePart(searchThing);
-            //}
+                if (searchPart.isAutoPdf()) {
+                    for (ArticleStruct article : articles) {
+                        DownloadPDF(article.pdfLink, article.yayinAd);
+                    }
+                }
+
+                searchPart.setHazir(true);
+                UpdatePart(searchPart);
+            }
         }
         catch (Exception e)
         {
@@ -102,6 +110,7 @@ public class SearchAndScrapper implements Runnable
         partJson.put("duzelenKelime", part.getDuzelenKelime());
         partJson.put("autoPdf", part.isAutoPdf());
         partJson.put("hazir", part.isHazir());
+        partJson.put("downloadPdfRequest", part.isDownloadPdfRequest());
         partJson.put("maxArticleCount", part.getMaxArticleCount());
         partJson.put("foundArticleCount", part.getFoundArticleCount());
 
@@ -584,21 +593,29 @@ public class SearchAndScrapper implements Runnable
     {
         if(!link.isEmpty())
         {
-            System.out.println("PDF indiriliyor | " + filename);
-
-            Thread.sleep(3000);
-            URL url = new URL(link);
-            ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-
             File dir = new File("./pdf");
             if(!dir.exists()) dir.mkdir();
 
             filename = filename.replaceAll("[/\\\\:*?\"<>|]", " ");
-            FileOutputStream fileOutputStream = new FileOutputStream("./pdf/" + filename + ".pdf");
-            FileChannel fileChannel = fileOutputStream.getChannel();
+            if(searchPart.isDownloadPdfRequest()) searchPart.setDuzelenKelime(filename);
 
-            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-            System.out.println("PDF indirildi   | " + filename);
+            File pdfFile = new File("./pdf/" + filename + ".pdf");
+
+            if(!pdfFile.exists())
+            {
+                System.out.println("PDF indiriliyor | " + filename);
+
+                Thread.sleep(3000);
+                URL url = new URL(link);
+                ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+
+                FileOutputStream fileOutputStream = new FileOutputStream("./pdf/" + filename + ".pdf");
+                FileChannel fileChannel = fileOutputStream.getChannel();
+
+                fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+                System.out.println("PDF indirildi   | " + filename);
+            }
+            else System.out.println("PDF zaten mevcut - " + filename + ".pdf");
         }
         else System.out.println(link + " adresindeki PDF bulunamadı. İlgili adres mevcut değil.");
     }

@@ -45,6 +45,7 @@ public class PartManager implements PartService {
         newPart.setAutoPdf(part.isAutoPdf());
         newPart.setHazir(part.isHazir());
         newPart.setEnableSerpAPI(part.isEnableSerpAPI());
+        newPart.setDownloadPdfRequest(part.isDownloadPdfRequest());
         newPart.setMaxArticleCount(part.getMaxArticleCount());
         newPart.setFoundArticleCount(part.getFoundArticleCount());
 
@@ -75,6 +76,7 @@ public class PartManager implements PartService {
             foundPart.setAutoPdf(partUpdateRequest.isAutoPdf());
             foundPart.setHazir(partUpdateRequest.isHazir());
             foundPart.setEnableSerpAPI(partUpdateRequest.isEnableSerpAPI());
+            foundPart.setDownloadPdfRequest(partUpdateRequest.isDownloadPdfRequest());
             foundPart.setMaxArticleCount(partUpdateRequest.getMaxArticleCount());
             foundPart.setFoundArticleCount(partUpdateRequest.getFoundArticleCount());
 

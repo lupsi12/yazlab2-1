@@ -22,6 +22,7 @@ public class Part {
     private boolean autoPdf;
     private boolean hazir;
     private boolean enableSerpAPI;
+    private boolean downloadPdfRequest;
     private int maxArticleCount;
     private int foundArticleCount;
 

@@ -4,15 +4,15 @@
 		<link rel="stylesheet" href="./bootstrap-5.3.2-dist/css/bootstrap.css">
 		<script src="main.js"></script> 
 		<title>
-			KEFALsoft Akademik
+			YILDIZsoft Akademik
 		</title>
 	</head>
 	
 	<body onload="onLoad();">
-		<div class="bg-image mh-100" style="background: url('bg-dark-80.png') center center fixed; height: 134vh;">
+		<div class="bg-image mh-100" style="background: url('bg-dark-85.png') center center fixed; height: 139vh;">
 			<div class="container text-white text-center py-5 position-absolute start-50 translate-middle-x">
 				<h1>
-					KEFALsoft Akademik
+					YILDIZsoft Akademik
 				</h1>
 				<br/>
 				<div class="row justify-content-md-end py-5">
@@ -35,57 +35,149 @@
 				<hr/>
 				
 				<h3 class="py-5" id="articlesInDatabaseTitle">
-					Önceden Aranmış Makaleler
+					Kayıtlı Makaleler
 				</h3>
 				
 				<div class="d-none" id="savedArticles">
 					<div class="row">
-						<div class="col-11">
-							<input type="text" class="form-control" id="filterText" placeholder="Veritabanında arayın">
+						<div class="col-8">
+							<input type="text" class="form-control" id="filterText" placeholder="Tüm veritabanında ara">
 						</div>
-						<div class="col-1">
-							<button type="button" class="btn btn-outline-light" onclick="SearchInArticles()">
+						<div class="col-2">
+							<button type="button" class="btn btn-outline-light" style="width: 100%;" onclick="SearchInArticles()">
 								Filtrele
 							</button>
+						</div>
+						<div class="col-2">
+							<button type="button" class="btn btn-outline-danger" style="width: 100%;" onclick="ClearAllFilters()">
+								Filtreleri Temizle
+							</button>
+						</div>
+					</div>
+					<div class="row mt-3">
+						<div class="col-2">
+							<input type="text" class="form-control" style="width: 100%;" id="filterArticleName" placeholder="Makale adı" title="Makale adı">
+						</div>
+						<div class="col-2">
+							<input type="text" class="form-control" style="width: 100%;" id="filterAuthors" placeholder="Yazarlar" title="Yazarlar">
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" style="width: 100%;" id="filterArticleType" placeholder="Yayın türü" title="Yayın türü">
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" style="width: 100%;" id="filterPublicationDate" placeholder="Yayımlanma tarihi" title="Yayımlanma tarihi">
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" style="width: 100%;" id="filterPublisher" placeholder="Yayımcı adı" title="Yayımcı adı">
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" style="width: 100%;" id="filterSearchKeywords" placeholder="Arama kelimeleri" title="Arama kelimeleri">
+						</div>
+						<div class="col-2">
+							<input type="text" class="form-control" style="width: 100%;" id="filterArticleKeywords" placeholder="Makale anahtar kelimeleri" title="Makale anahtar kelimeleri">
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" style="width: 100%;" id="filterCitations" placeholder="Alıntılar" title="Alıntılar">
+						</div>
+						<div class="col">
+							<input type="text" class="form-control" style="width: 100%;" id="filterDoi" placeholder="DOI" title="DOI">
 						</div>
 					</div>
 					
 					<br/>
 				
 					<div class="table-responsive" style="max-height: 590px; max-width: 100%; overflow: auto; display: inline-block;">
-						<table class="table table-striped table-bordered table-hover border-dark" id="articleTable">
-							<thead class="border-light sticky-top">
+						<table class="table table-striped table-bordered table-hover border-dark" style="width: 100%;" id="articleTable">
+							<thead class="border-light">
 								<tr>
-									<th class="bg-transparent text-white col" scope="col" onclick="InvertNameSort();" id="tableArticleName">Makale Adı</th>
-									<th class="bg-transparent text-white col" scope="col">Yazarlar</th>
-									<th class="bg-transparent text-white col" scope="col">Yayın Türü</th>
-									<th class="bg-transparent text-white col-1" scope="col" onclick="InvertDateSort();" id="tableArticleDate">Yayımlanma Tarihi</th>
-									<th class="bg-transparent text-white col" scope="col">Yayıncı Adı</th>
-									<th class="bg-transparent text-white col" scope="col">Arama Kelimeleri</th>
-									<th class="bg-transparent text-white col" scope="col">Makale Anahtar Kelimeleri</th>
-								<!--<th class="bg-transparent text-white col" scope="col">Özet</th>-->
-									<th class="bg-transparent text-white col" scope="col" onclick="InvertCiteSort();" id="tableCitation">Alıntı Sayısı</th>
-									<th class="bg-transparent text-white col" scope="col">DOI Numarası</th>
-								<!--<th class="bg-transparent text-white col" scope="col">Makale Linki</th>
-									<th class="bg-transparent text-white col" scope="col">PDF Linki</th>-->
-								<!--<th class="text-bg-secondary" scope="col-8" onclick="InvertNameSort();" id="tableArticleName">Makale Adı</th>
-									<th class="text-bg-secondary" scope="col-8">Yazarlar</th>
-									<th class="text-bg-secondary" scope="col-8">Yayın Türü</th>
-									<th class="text-bg-secondary" scope="col-8" onclick="InvertDateSort();" id="tableArticleDate">Yayın Tarihi</th>
-									<th class="text-bg-secondary" scope="col-8">Yayıncı Adı</th>
-									<th class="text-bg-secondary" scope="col-8">Arama Kelimeleri</th>
-									<th class="text-bg-secondary" scope="col-8">Makale Anahtar Kelimeleri</th>
-									<th class="text-bg-secondary" scope="col-8">Özet</th>-->
-								<!--<th class="text-bg-secondary" scope="col-10" onclick="InvertCiteSort();" id="tableCitation">Alıntı Sayısı</th>
-									<th class="text-bg-secondary" scope="col-8">DOI Numarası</th>
-									<th class="text-bg-secondary" scope="col-8">Makale Linki</th>
-									<th class="text-bg-secondary" scope="col-8">PDF Linki</th>-->
+									<th class="bg-transparent text-white col-3" scope="col" onclick="InvertNameSort();" id="tableArticleName">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Makale Adı
+									</th>
+									<th class="bg-transparent text-white col-2" scope="col">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Yazarlar
+									</th>
+									<th class="bg-transparent text-white col" scope="col">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Yayın Türü
+									</th>
+									<th class="bg-transparent text-white col-1" scope="col" onclick="InvertDateSort();" id="tableArticleDate">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Yayımlanma Tarihi
+									</th>
+									<th class="bg-transparent text-white col-2" scope="col">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Yayımcı Adı
+									</th>
+									<th class="bg-transparent text-white col" scope="col">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Arama Kelimeleri
+									</th>
+									<th class="bg-transparent text-white col-3" scope="col">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Makale Anahtar Kelimeleri
+									</th>
+									<th class="bg-transparent text-white col" scope="col" onclick="InvertCiteSort();" id="tableCitation">
+										<!--<a href="#" class="stretched-link"></a>-->
+										Alıntı Sayısı
+									</th>
+									<th class="bg-transparent text-white col" scope="col">
+										<!--<a href="#" class="stretched-link"></a>-->
+										DOI Numarası
+									</th>
 								</tr>
 							</thead>
 							<tbody id="articleTableBody">
 							</tbody>
 						</table>
 					</div>
+
+					<!--<div style="max-height: 590px; max-width: 200%; width: 100%; overflow: auto; display: inline-block;">
+						<div class="card bg-transparent border-light text-center text-white mb-1" style="width: 200%;" id="articleTable">
+							<div class="row g-0 border-light">
+								<div class="col-2 align-middle border-light" onclick="InvertNameSort();" id="tableArticleName">
+									Makale Adı
+								</div>
+								<div class="vr"></div>
+								<div class="col-1 align-middle border-light">
+									Yazarlar
+								</div>
+								<div class="vr"></div>
+								<div class="col align-middle">
+									Yayım Türü
+								</div>
+								<div class="vr"></div>
+								<div class="col-1 align-middle" onclick="InvertDateSort();" id="tableArticleDate">
+									Yayım Tarihi
+								</div>
+								<div class="vr"></div>
+								<div class="col-2 align-middle">
+									Yayımcı Adı
+								</div>
+								<div class="vr"></div>
+								<div class="col align-middle">
+									Arama Kelimeleri
+								</div>
+								<div class="vr"></div>
+								<div class="col-2 align-middle">
+									Makale Anahtar Kelimeleri
+								</div>
+								<div class="vr"></div>
+								<div class="col-1 align-middle" onclick="InvertCiteSort();" id="tableCitation">
+									Alıntılar
+								</div>
+								<div class="vr border-light"></div>
+								<div class="col-1 align-middle">
+									DOI Numarası
+								</div>
+							</div>
+							<div id="articleTableBody">
+
+							</div>
+						</div>
+					</div>-->
+
 				</div>
 				<div class="col" id="articleNotFoundText">
 					Veritabanında herhangi bir makale bulunamadı.
@@ -121,7 +213,7 @@
 				<br/>
 				<footer class="align-bottom text-center text-white">
 					<p>
-						©2024 KEFALsoft Limited - Bu web sitesi Kocaeli Üniversitesi Bilgisayar Mühendisliği Yazılım Laboratuvarı II Proje 1 için yapılmıştır.
+						©2018-2024 YILDIZsoft Corporation - Bu web sitesi Kocaeli Üniversitesi Bilgisayar Mühendisliği Yazılım Laboratuvarı II Proje 1 için yapılmıştır.
 					</p>
 				</footer>
 			</div>

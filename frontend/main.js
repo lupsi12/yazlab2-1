@@ -45,7 +45,7 @@ async function onLoad()
 	{
 		console.log(articleArray);
 		InvertNameSort();
-		document.getElementById("articlesInDatabaseTitle").innerHTML = "Önceden Aranmış Makaleler - " + articleArray.length + " Adet";
+		document.getElementById("articlesInDatabaseTitle").innerHTML = "Kayıtlı Makaleler - " + articleArray.length + " Adet";
 		document.getElementById("savedArticles").classList.remove("d-none");
 		document.getElementById("articleNotFoundText").classList.add("d-none");
 	}
@@ -54,6 +54,23 @@ async function onLoad()
 		document.getElementById("savedArticles").classList.add("d-none");
 		document.getElementById("articleNotFoundText").classList.remove("d-none");
 	}
+}
+
+function ClearAllFilters()
+{
+    document.getElementById("filterText").value = "";
+    document.getElementById("filterArticleName").value = "";
+    document.getElementById("filterAuthors").value = "";
+    document.getElementById("filterArticleType").value = "";
+    document.getElementById("filterPublicationDate").value = "";
+    document.getElementById("filterPublisher").value = "";
+    document.getElementById("filterSearchKeywords").value = "";
+    document.getElementById("filterArticleKeywords").value = "";
+    document.getElementById("filterCitations").value = "";
+    document.getElementById("filterDoi").value = "";
+
+    DropTable();
+    articleArray.forEach(AddArticleToArticleTable);
 }
 
 function RemoveDuplicateArticles(articles)
@@ -71,27 +88,247 @@ function RemoveDuplicateArticles(articles)
 
 function SearchInArticles()
 {
-	let filters = document.getElementById("filterText").value;
+	let filters = document.getElementById("filterText").value.toLowerCase();
+
+	let filterArticleName = document.getElementById("filterArticleName").value.toLowerCase();
+	let filterAuthors = document.getElementById("filterAuthors").value.toLowerCase();
+	let filterArticleType = document.getElementById("filterArticleType").value.toLowerCase();
+	let filterPublicationDate = document.getElementById("filterPublicationDate").value.toLowerCase();
+	let filterPublisher = document.getElementById("filterPublisher").value.toLowerCase();
+	let filterSearchKeywords = document.getElementById("filterSearchKeywords").value.toLowerCase();
+	let filterArticleKeywords = document.getElementById("filterArticleKeywords").value.toLowerCase();
+	let filterCitations = document.getElementById("filterCitations").value.toLowerCase();
+	let filterDoi = document.getElementById("filterDoi").value.toLowerCase();
+
 	let filteredArticles = [];
-	
-	for(let i = 0; i < articleArray.length; i++)
+
+	for(let a of articleArray)
 	{
-		if(	articleArray[i].yayinAd.includes(filters) ||
+	    filteredArticles.push(a);
+	}
+	
+	/*for(let i = 0; i < articleArray.length; i++)
+	{
+		if((articleArray[i].yayinAd.includes(filters) ||
 			articleArray[i].yazarIsim.includes(filters) ||
 			articleArray[i].yayinTur.includes(filters) ||
 			articleArray[i].yayinTarih.includes(filters) ||
-			articleArray[i].yayinciAdi.includes(filters) ||
+			(articleArray[i].yayinciAdi != null && articleArray[i].yayinciAdi.includes(filters)) ||
 			articleArray[i].aramaAnahtarKelime.includes(filters) ||
 			articleArray[i].makaleAnahtarKelime.includes(filters) ||
 			articleArray[i].alintiSayisi == filters ||
 			(articleArray[i].doiNumarasi != null && articleArray[i].doiNumarasi.includes(filters)) ||
 			articleArray[i].ozet.includes(filters) ||
 			(articleArray[i].urlAdresi != null && articleArray[i].urlAdresi.includes(filters)) ||
-			(articleArray[i].urlLink != null && articleArray[i].urlLink.includes(filters)))
+			(articleArray[i].urlLink != null && articleArray[i].urlLink.includes(filters))) ||
+
+			articleArray[i].yayinAd.toLowerCase().includes(filterArticleName) &&
+			articleArray[i].yazarIsim.toLowerCase().includes(filterAuthors) &&
+			articleArray[i].yayinTur.toLowerCase().includes(filterArticleType) &&
+			articleArray[i].yayinTarih.toLowerCase().includes(filterPublicationDate) &&
+			(articleArray[i].yayinciAdi != null && articleArray[i].yayinciAdi.toLowerCase().includes(filterPublisher)) &&
+			articleArray[i].aramaAnahtarKelime.toLowerCase().includes(filterSearchKeywords) &&
+			articleArray[i].makaleAnahtarKelime.toLowerCase().includes(filterArticleKeywords) &&
+			articleArray[i].alintiSayisi.toLowerCase().includes(filterCitations) &&
+			(articleArray[i].doiNumarasi != null && articleArray[i].doiNumarasi.toLowerCase().includes(filterDoi))
+		)
 		{
 			filteredArticles.push(articleArray[i]);
 		}
+	}*/
+
+	console.log("filteredArticles = " + filteredArticles);
+
+	if(filters.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        console.log(a);
+	        if(!(a.yayinAd.toLowerCase().includes(filters) ||
+	             a.yazarIsim.toLowerCase().includes(filters) ||
+	             a.yayinTur.toLowerCase().includes(filters) ||
+	             a.yayinTarih.toLowerCase().includes(filters) ||
+	             //a.yayinciAdi.toLowerCase().includes(filters) ||
+	             a.aramaAnahtarKelime.toLowerCase().includes(filters) ||
+	             //a.makaleAnahtarKelime.toLowerCase().includes(filters) ||
+	             a.alintiSayisi.toString().includes(filters) ||
+	             //a.doiNumarasi.toLowerCase().includes(filters) ||
+	             //a.ozet.toLowerCase().includes(filters) ||
+	             a.urlAdresi.toLowerCase().includes(filters)
+	             //a.urlLink.toLowerCase().includes(filters)
+	        ))
+	        {
+	            if(a.yayinciAdi != null && !a.yayinciAdi.toLowerCase().includes(filters))
+	            {
+	                delete filteredArticles[filteredArticles.indexOf(a)];
+	            }
+	            if(a.makaleAnahtarKelime != null && !a.makaleAnahtarKelime.toLowerCase().includes(filters))
+	            {
+	                delete filteredArticles[filteredArticles.indexOf(a)];
+	            }
+	            if(a.doiNumarasi != null && !a.doiNumarasi.toLowerCase().includes(filters))
+	            {
+	                delete filteredArticles[filteredArticles.indexOf(a)];
+	            }
+	            if(a.ozet != null && !a.ozet.toLowerCase().includes(filters))
+	            {
+	                delete filteredArticles[filteredArticles.indexOf(a)];
+	            }
+	            if(a.urlLink != null && !a.urlLink.toLowerCase().includes(filters))
+	            {
+	                delete filteredArticles[filteredArticles.indexOf(a)];
+	            }
+	        }
+	    }
 	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return element !== undefined;
+	});
+
+    // Makale adı
+	if(filterArticleName.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(!a.yayinAd.toLowerCase().includes(filterArticleName))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Yazarlar
+	if(filterAuthors.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(!a.yazarIsim.toLowerCase().includes(filterAuthors))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Makale türü
+	if(filterArticleType.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(!a.yayinTur.toLowerCase().includes(filterArticleType))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Yayımlanma tarihi
+	if(filterPublicationDate.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(!a.yayinTarih.toLowerCase().includes(filterPublicationDate))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Yayıncı adı
+	if(filterPublisher.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(a.yayinciAdi != null && !a.yayinciAdi.toLowerCase().includes(filterPublisher))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Arama kelimeleri
+	if(filterSearchKeywords.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(!a.aramaAnahtarKelime.toLowerCase().includes(filterSearchKeywords))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Makale anahtar kelimeleri
+	if(filterArticleKeywords.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(a.makaleAnahtarKelime != null && !a.makaleAnahtarKelime.toLowerCase().includes(filterArticleKeywords))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // Alıntılar
+	if(filterCitations.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(!a.alintiSayisi.toString().includes(filterCitations))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
+
+    // DOI numarası
+	if(filterDoi.length > 0)
+	{
+	    for(let a of filteredArticles)
+	    {
+	        if(a.doiNumarasi != null && !a.doiNumarasi.toLowerCase().includes(filterDoi))
+	        {
+	            delete filteredArticles[filteredArticles.indexOf(a)];
+	        }
+	    }
+	}
+
+	filteredArticles = filteredArticles.filter(function(element) {
+	    return !!element;
+	});
 	
 	DropTable();
 	filteredArticles.forEach(AddArticleToArticleTable);
@@ -112,7 +349,7 @@ async function SearchArticle()
 	
 	if(searchKeywords.length > 0)
 	{
-		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false, enableSerpAPI: enableSerbia, maxArticleCount: MAX_ARTICLE, foundArticleCount: 0 };
+		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false, enableSerpAPI: enableSerbia, downloadPdfRequest: false, maxArticleCount: MAX_ARTICLE, foundArticleCount: 0 };
 		let response = await fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
 		let responseJson = await response.json();
 		console.log(responseJson);

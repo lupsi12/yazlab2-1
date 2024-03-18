@@ -146,7 +146,7 @@ async function CheckIfReady()
     let jsonRes = await response.json();
 
     document.getElementById("searchText").value = jsonRes.kelime;
-    document.title = jsonRes.kelime + " - KEFALsoft Akademik";
+    document.title = jsonRes.kelime + " - YILDIZsoft Akademik";
     autoPDF = jsonRes.autoPdf;
 
     if(jsonRes.hazir == true)
@@ -186,7 +186,7 @@ async function SearchArticle()
 
 	if(searchKeywords.length > 0)
 	{
-		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false, enableSerpAPI: enableSerbia, maxArticleCount: MAX_ARTICLE, foundArticleCount: 0 };
+		let part = { kelime: searchKeywords, duzelenKelime: "", autoPdf: autoPDF, hazir: false, enableSerpAPI: enableSerbia, downloadPdfRequest: false, maxArticleCount: MAX_ARTICLE, foundArticleCount: 0 };
 		let response = await fetch("http://localhost:8080/part", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(part) });
 		let responseJson = await response.json();
 		console.log(responseJson);
